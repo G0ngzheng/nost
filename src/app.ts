@@ -1,4 +1,6 @@
 import Koa from 'koa'
+import staticServe from 'koa-static'
+import logger from 'koa-logger'
 import { routerRegister } from './router/index'
 import bodyParser from 'koa-bodyparser'
 import { wrapperMiddleware } from './middleware/wrapper.middle'
@@ -6,15 +8,22 @@ import errorHandler from './error'
 
 const app = new Koa()
 
-// 参数处理
+// handle static
+app.use(staticServe(`${__dirname}/static`))
+
+// handle logger
+app.use(logger())
+
+// handle request
 app.use(bodyParser())
-// 注册路由
+
+// handle router
 routerRegister(app)
 
-// 结果包装
+// handle wrapper
 app.use(wrapperMiddleware)
 
-// 错误处理
+// handle error
 app.on('error', errorHandler)
 
 export default app
